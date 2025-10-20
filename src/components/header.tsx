@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { Menu, X } from "lucide-react"
-
+import Image from "next/image"
 export default function Header() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
@@ -16,13 +16,17 @@ export default function Header() {
   ]
 
   return (
-    <header className="bg-slate-900 border-b border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+    <header className=" bg-gradient-to-r from-purple-600 to-blue-600  border-slate-800 z-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="text-xl sm:text-2xl">☀️</span>
-            <span className="text-white font-semibold text-base sm:text-lg">AstroLOGy</span>
+           <Image
+           src='/images/logo/logo.png'
+           alt=""
+           height={100}
+           width={200}
+           />
           </div>
 
           {/* Desktop Navigation */}
@@ -34,7 +38,7 @@ export default function Header() {
                   key={item.href}
                   href={item.href}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                    isActive ? "bg-blue-500 text-white" : "text-slate-300 hover:text-white hover:bg-slate-800"
+                    isActive ? "bg-orange-300 text-white" : "text-slate-300 hover:text-white hover:bg-slate-800"
                   }`}
                 >
                   {item.label}

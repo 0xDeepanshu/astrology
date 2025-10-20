@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ZODIACS, Zodiac } from '@/lib/zodiacs';
-import Header from '@/components/header';
+import { ShootingStarsAndStarsBackgroundDemo } from '@/components/Shootingstarsbg';
 export default function Home() {
   const [currentZodiac, setCurrentZodiac] = useState<Zodiac>(ZODIACS[0]);
   const [timeLeft, setTimeLeft] = useState<number>(60);
@@ -70,9 +70,27 @@ const spinWheel = () => {
 
   return (
     <>
-    
-    <div className="min-h-screen bg-black text-white p-4 sm:p-6 flex flex-col items-center justify-center gap-6 md:gap-8 font-sans">
-      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-blue-300 text-center">AstroLOLogy</h1>
+    <div className="min-h-screen z-10  text-white p-4 sm:p-6 flex flex-col items-center justify-center gap-6 md:gap-8 font-sans">
+    <ShootingStarsAndStarsBackgroundDemo/>
+      <div>
+      <div className='absolute left-80 bottom-24'>
+        <Image
+        src='/images/bg/alrry.webp'
+        alt=''
+        height={300}
+        width={300}
+        />
+      </div>
+      <div className='absolute right-80 bottom-24'>
+        <Image
+        src='/images/bg/candy.webp'
+        alt=''
+        height={300}
+        width={300}
+        />
+      </div>
+      </div>
+      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-orange-300 text-center">AstroLOLogy</h1>
       <p className="text-center max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-gray-400 px-2">
         Mint mystical zodiac sigils as the cosmic wheel turns. Each sign appears for one minute in the eternal celestial dance.
       </p>

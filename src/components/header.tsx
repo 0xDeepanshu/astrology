@@ -40,8 +40,8 @@ export default function Header() {
         </nav>
 
         {/* Connect Wallet Button */}
-        <button className="px-4 py-2 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors">
-          Connect Wallet
+        <button className="">
+          <appkit-button />
         </button>
       </div>
     </header>

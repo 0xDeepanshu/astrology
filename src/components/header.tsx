@@ -2,9 +2,12 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useState } from "react"
+import { Menu, X } from "lucide-react"
 
 export default function Header() {
   const pathname = usePathname()
+  const [isOpen, setIsOpen] = useState(false)
 
   const navItems = [
     { label: "Wheel", href: "/" },
@@ -13,36 +16,70 @@ export default function Header() {
   ]
 
   return (
-    <header className="bg-slate-900 border-b border-slate-800 ">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">☀️</span>
-          <span className="text-white font-semibold text-lg">AstroLOGy</span>
+    <header className="bg-slate-900 border-b border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className="text-xl sm:text-2xl">☀️</span>
+            <span className="text-white font-semibold text-base sm:text-lg">AstroLOGy</span>
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    isActive ? "bg-blue-500 text-white" : "text-slate-300 hover:text-white hover:bg-slate-800"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              )
+            })}
+          </nav>
+
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Connect Wallet Button */}
+            <button className="flex-shrink-0">
+              <appkit-button />
+            </button>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex items-center gap-1">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-blue-500 text-white" : "text-slate-300 hover:text-white hover:bg-slate-800"
-                }`}
-              >
-                {item.label}
-              </Link>
-            )
-          })}
-        </nav>
-
-        {/* Connect Wallet Button */}
-        <button className="">
-          <appkit-button />
-        </button>
+        {/* Mobile Navigation */}
+        {isOpen && (
+          <nav className="md:hidden mt-4 pb-4 flex flex-col gap-2 border-t border-slate-800 pt-4">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors block ${
+                    isActive ? "bg-blue-500 text-white" : "text-slate-300 hover:text-white hover:bg-slate-800"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              )
+            })}
+          </nav>
+        )}
       </div>
     </header>
   )

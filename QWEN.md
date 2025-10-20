@@ -23,9 +23,20 @@ This is a Next.js 15 application called "AstroLOLogy" - a zodiac wheel spinner t
 D:\Nextjs\spinwheel\
 ├── src/
 │   ├── app/
+│   │   ├── burn/
+│   │   │   └── page.tsx (placeholder for burn page)
+│   │   ├── inventory/
+│   │   │   └── page.tsx (placeholder for inventory page)
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx (main layout with header)
 │   │   └── page.tsx (main page with zodiac wheel)
 │   ├── components/
-│   │   └── wheel.tsx (wheel component)
+│   │   └── header.tsx (navigation header)
+│   ├── config/
+│   │   └── index.tsx (wagmi and reown configuration)
+│   ├── context/
+│   │   └── index.tsx (Wagmi and query client provider)
 │   └── lib/
 │       └── zodiacs.ts (zodiac data and interface)
 ├── public/
@@ -49,9 +60,16 @@ D:\Nextjs\spinwheel\
 - Array of 12 zodiac signs with symbols and date ranges
 - Index corresponds to position on the wheel (0-11)
 
-### Wheel Component (src/components/wheel.tsx)
-- Displays the zodiac wheel image
-- Uses Next.js Image component for optimized loading
+### Navigation Header (src/components/header.tsx)
+- Shows navigation links to Wheel, Inventory, and Burn pages
+- Shows a connect wallet button using Reown AppKit
+- Active page highlighting
+
+### Wallet Integration
+- Uses Reown AppKit for wallet connection
+- Wagmi adapter for wallet integration
+- React Query for state management
+- Cookie-based session storage
 
 ## Building and Running
 
@@ -96,11 +114,16 @@ The application runs on http://localhost:3000 by default.
 - The timer countdown resets to 60 seconds after each rotation
 - The arrow pointer is fixed at the top center to indicate the selected zodiac
 - The "Mint" functionality currently shows an alert but would need to be implemented for actual NFT minting
+- Wallet connection functionality is implemented using Reown AppKit
+- Additional pages (inventory and burn) exist as placeholders and need implementation
 
 ## File Locations
 
 - Main application logic: `src/app/page.tsx`
 - Zodiac data: `src/lib/zodiacs.ts`
+- Header component: `src/components/header.tsx`
+- Wallet configuration: `src/config/index.tsx`
+- Global context: `src/context/index.tsx`
 - Visual components: `src/components/`
 - Images: `public/images/`
 - Configuration: root directory files

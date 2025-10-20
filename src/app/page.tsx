@@ -71,24 +71,24 @@ const spinWheel = () => {
   return (
     <>
     
-    <div className="min-h-screen bg-black text-white p-6 flex flex-col items-center justify-center gap-8 font-sans">
-      <h1 className="text-4xl md:text-6xl font-bold text-blue-300">AstroLOLogy</h1>
-      <p className="text-center max-w-lg text-gray-400 mb-6">
+    <div className="min-h-screen bg-black text-white p-4 sm:p-6 flex flex-col items-center justify-center gap-6 md:gap-8 font-sans">
+      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-blue-300 text-center">AstroLOLogy</h1>
+      <p className="text-center max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-gray-400 px-2">
         Mint mystical zodiac sigils as the cosmic wheel turns. Each sign appears for one minute in the eternal celestial dance.
       </p>
 
       {/* Current Zodiac Display */}
-      <div className="text-center mb-4">
-        <h2 className="text-xl md:text-2xl">
+      <div className="text-center mb-4 px-2">
+        <h2 className="text-lg sm:text-xl md:text-2xl">
           Current: <span className="font-bold text-purple-300">{currentZodiac.name} {currentZodiac.symbol}</span>
         </h2>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-xs sm:text-sm text-gray-500 mt-1">
           Next rotation in: <span className="text-yellow-300">{formatTime(timeLeft)}</span>
         </p>
       </div>
 
       {/* Wheel Container */}
-      <div className="relative w-full max-w-md mx-auto">
+      <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto aspect-square">
         <div
     className={`transition-transform duration-1500 ease-out ${
       isSpinning ? '' : 'transition-none'
@@ -104,7 +104,7 @@ const spinWheel = () => {
             width={400}
             height={400}
             priority
-            className="mx-auto"
+            className="w-full h-auto max-w-full max-h-full"
           />
         </div>
 
@@ -123,14 +123,14 @@ const spinWheel = () => {
       </div>
 
       {/* Mint Button */}
-      <div className="mt-6">
+      <div className="mt-4 sm:mt-6 px-2 w-full max-w-xs sm:max-w-sm">
         <button
           onClick={() => alert(`Minting ${currentZodiac.name} Sigil...`)}
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-6 py-3 rounded-lg font-semibold transition-all shadow-lg"
+          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-4 py-3 sm:px-6 rounded-lg font-semibold transition-all shadow-lg"
         >
           Mint {currentZodiac.name} Sigil ✨
         </button>
-        <p className="text-xs text-gray-500 mt-2">Mint the currently active zodiac sigil NFT</p>
+        <p className="text-xs text-gray-500 mt-2 text-center">Mint the currently active zodiac sigil NFT</p>
       </div>
     </div>
     </>

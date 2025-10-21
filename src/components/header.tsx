@@ -21,13 +21,15 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2 flex-shrink-0">
-           <Image
-           src='/images/logo/logo.png'
-           alt=""
-           height={100}
-           width={200}
-           />
-          </div>
+  <Image
+    src="/images/logo/logo.png"
+    alt="Logo"
+    height={500}
+    width={500}
+    className="h-[40px] w-[150px] sm:h-[60px] sm:w-[200px]"
+  />
+</div>
+    
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">

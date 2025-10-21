@@ -102,12 +102,12 @@ const spinWheel = () => {
     }}
   >
           <Image
-            src="/images/final.png" // 👈 Use your final image
+            src="/images/sigilwheel.png" // 👈 Use your final image
             alt="Zodiac Wheel"
             width={400}
             height={400}
             priority
-            className="w-full h-auto max-w-full max-h-full"
+            className="w-full h-auto max-w-full max-h-full rotate-[-13deg]"
           />
         </div>
 

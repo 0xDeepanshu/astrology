@@ -1,26 +1,71 @@
 "use client"
+import { useState, useEffect } from 'react'
 import { ShootingStarsAndStarsBackgroundDemo } from "../Shootingstarsbg"
 import { SigilCard } from "./sigil-card"
 import { StatsCard } from "./stats-card"
-const ZODIAC_SIGILS = [
-  { name: "Aries", count: 3, symbol: "♈" },
-  { name: "Taurus",  count: 2, symbol: "♉" },
-  { name: "Gemini",  count: 1, symbol: "♊" },
-  { name: "Cancer",  count: 0, symbol: "♋" },
-  { name: "Leo",  count: 5, symbol: "♌" },
-  { name: "Virgo",  count: 1, symbol: "♍" },
-  { name: "Libra",  count: 0, symbol: "♎" },
-  { name: "Scorpio",  count: 2, symbol: "♏" },
-  { name: "Sagittarius",  count: 1, symbol: "♐" },
-  { name: "Capricorn",  count: 0, symbol: "♑" },
-  { name: "Aquarius",  count: 4, symbol: "♒" },
-  { name: "Pisces",  count: 2, symbol: "♓" },
-]
+import { useAccount, usePublicClient } from 'wagmi'
+import { ZODIACS } from '@/lib/zodiacs'
+import { ASTROSIGILS_CONTRACT_ADDRESS } from '@/contracts'
+import astrosigilsAbi from '@/abi/astrosigils.json'
 
 export function SigilInventory() {
-  const totalSigils = ZODIAC_SIGILS.reduce((sum, sigil) => sum + sigil.count, 0)
-  const uniqueTypes = ZODIAC_SIGILS.filter((sigil) => sigil.count > 0).length
-  const totalTypes = ZODIAC_SIGILS.length
+  const { address, isConnected } = useAccount()
+  const publicClient = usePublicClient()
+  const [sigilBalances, setSigilBalances] = useState<number[]>(Array(ZODIACS.length).fill(0))
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+  // Fetch all token balances when wallet is connected
+  useEffect(() => {
+    if (!isConnected || !address || !publicClient) {
+      setSigilBalances(Array(ZODIACS.length).fill(0));
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    
+    // Create array of promises to fetch all balances
+    const balancePromises = ZODIACS.map(async (zodiac) => {
+      try {
+        const result = await publicClient.readContract({
+          address: ASTROSIGILS_CONTRACT_ADDRESS as `0x${string}`,
+          abi: astrosigilsAbi,
+          functionName: 'balanceOf',
+          args: [address, BigInt(zodiac.index)],
+        });
+        return Number(result);
+      } catch (err) {
+        console.error(`Error fetching balance for ${zodiac.name}:`, err);
+        return 0;
+      }
+    });
+
+    Promise.all(balancePromises)
+      .then(balances => {
+        setSigilBalances(balances);
+      })
+      .catch(err => {
+        console.error('Error fetching balances:', err);
+        setError(err.message || 'Error fetching balances');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [address, isConnected, publicClient]);
+
+  // Calculate stats
+  const totalSigils = sigilBalances.reduce((sum, balance) => sum + balance, 0)  // Total number of NFTs owned
+  const uniqueTypes = sigilBalances.filter(count => count > 0).length  // Number of unique types owned (types with count > 0)
+  const totalTypes = ZODIACS.length  // Total possible types (12 in this case)
+
+  // Create formatted sigil data
+  const zodiacSigils = ZODIACS.map((zodiac, index) => ({
+    name: zodiac.name,
+    count: sigilBalances[index] || 0,
+    symbol: zodiac.symbol
+  }))
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -36,14 +81,35 @@ export function SigilInventory() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-12 max-w-2xl mx-auto">
-          <StatsCard label="Total Sigils owner by user" value={totalSigils} />
-          
-          <StatsCard label="Total Types of NFT" value={totalTypes} />
+          <StatsCard label="Total Sigils owned by user" value={totalSigils} />
+          <StatsCard label="Unique Types Owned" value={uniqueTypes} />
         </div>
+
+        {/* Connection Status */}
+        {!isConnected && (
+          <div className="text-center mb-8 p-4 bg-yellow-900/30 border border-yellow-700 rounded-lg">
+            <p className="text-yellow-300">Connect your wallet to view your sigil inventory</p>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {loading && isConnected && (
+          <div className="text-center mb-8">
+            <p className="text-blue-300">Loading your sigil collection...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="text-center mb-8 p-4 bg-red-900/30 border border-red-700 rounded-lg">
+            <p className="text-red-300">Error loading sigil inventory: {error}</p>
+            <p className="text-red-400 text-sm mt-2">Please check if the contract address is correct and you're on the right network</p>
+          </div>
+        )}
 
         {/* Sigil Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {ZODIAC_SIGILS.map((sigil) => (
+          {zodiacSigils.map((sigil) => (
             <SigilCard key={sigil.name} sigil={sigil} />
           ))}
         </div>

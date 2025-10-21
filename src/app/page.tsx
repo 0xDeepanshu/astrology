@@ -1,21 +1,69 @@
 // app/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { ZODIACS, Zodiac } from '@/lib/zodiacs';
 import { ShootingStarsAndStarsBackgroundDemo } from '@/components/Shootingstarsbg';
 import Particles from '@/components/Particles';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
+import { ASTROSIGILS_CONTRACT_ADDRESS } from '@/contracts';
+import astrosigilsAbi from '@/abi/astrosigils.json';
+
 export default function Home() {
   const [currentZodiac, setCurrentZodiac] = useState<Zodiac>(ZODIACS[0]);
-  const [timeLeft, setTimeLeft] = useState<number>(60);
+  const [timeLeft, setTimeLeft] = useState<number>(30);
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [rotationAngle, setRotationAngle] = useState<number>(0);
+  
+  const { address, isConnected } = useAccount();
+  
+  // Write contract function for minting
+  const { data: hash, writeContract, error: writeError, isPending } = useWriteContract();
+  
+  // Wait for transaction receipt to know when minting is complete
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  });
+  
+  // Refs to track current values in callbacks without re-rendering
+  const currentZodiacRef = useRef(currentZodiac);
+  const rotationAngleRef = useRef(rotationAngle);
+  
+  // Update refs whenever values change
+  useEffect(() => {
+    currentZodiacRef.current = currentZodiac;
+  }, [currentZodiac]);
+  
+  useEffect(() => {
+    rotationAngleRef.current = rotationAngle;
+  }, [rotationAngle]);
+  
+  // Function to mint the current zodiac sigil
+  const handleMintSigil = async () => {
+    if (!isConnected) {
+      alert('Please connect your wallet first');
+      return;
+    }
+    
+    try {
+      // Call the mint function on the Astrosigils contract
+      writeContract({
+        address: ASTROSIGILS_CONTRACT_ADDRESS as `0x${string}`,
+        abi: astrosigilsAbi,
+        functionName: 'mint',
+      });
+    } catch (error) {
+      console.error('Error minting sigil:', error);
+      alert(`Error minting ${currentZodiac.name} Sigil: ${error.message || 'Unknown error'}`);
+    }
+  };
 
-  // Pick a random zodiac
-  const getRandomZodiac = (): Zodiac => {
-    const randomIndex = Math.floor(Math.random() * ZODIACS.length);
-    return ZODIACS[randomIndex];
+  // Get the next zodiac sign in sequence
+  const getNextZodiac = (current: Zodiac): Zodiac => {
+    const currentIndex = current.index;
+    const nextIndex = (currentIndex + 1) % ZODIACS.length; // Go to next, wrap to 0 after 11
+    return ZODIACS[nextIndex];
   };
 
   // Calculate rotation angle based on zodiac index
@@ -25,42 +73,41 @@ export default function Home() {
   };
 
   // Start spin animation and update zodiac
-const spinWheel = () => {
+const spinWheel = useCallback(() => {
   setIsSpinning(true);
 
-  // Step 1: Pick the final zodiac
-  const newZodiac = getRandomZodiac();
+  // Use the ref to get the current zodiac value
+  const newZodiac = getNextZodiac(currentZodiacRef.current);
   const finalAngle = calculateRotation(newZodiac); // e.g., -90°
 
-  // Step 2: Add extra full rotations (e.g., 5 full spins = 1800°)
-  const extraRotations = 5 * 360; // 5 full spins
-  const spinAngle = finalAngle - extraRotations; // e.g., -90 - 1800 = -1890
+  // Use the ref to get the current rotation angle
+  const currentAngle = rotationAngleRef.current;
+  const spinAngle = currentAngle - 360; // Make one full clockwise rotation from current position
 
   // Step 3: Animate fast spin
   setRotationAngle(spinAngle);
 
-  // Step 4: After fast spin, instantly snap to final angle
+  // Step 4: After fast spin, transition smoothly to final angle
   setTimeout(() => {
-    // Disable transition for instant snap
     setRotationAngle(finalAngle);
     setCurrentZodiac(newZodiac);
     setIsSpinning(false);
   }, 1500); // Fast spin duration (1.5s)
-};
+}, [getNextZodiac, calculateRotation]); // Adding dependencies
   // Timer countdown effect
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           spinWheel();
-          return 60;
+          return 30;
         }
         return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [spinWheel]); // Adding spinWheel as dependency since it's now properly memoized with useCallback
 
   // Format seconds to MM:SS
   const formatTime = (seconds: number): string => {
@@ -128,12 +175,30 @@ const spinWheel = () => {
       {/* Mint Button */}
       <div className="mt-4 sm:mt-6 px-2 w-full max-w-xs sm:max-w-sm z-10 relative" style={{ pointerEvents: 'auto' }}>
         <button
-          onClick={() => alert(`Minting ${currentZodiac.name} Sigil...`)}
-          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-4 py-3 sm:px-6 rounded-lg font-semibold transition-all shadow-lg"
+          onClick={handleMintSigil}
+          disabled={isPending || isConfirming}
+          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-4 py-3 sm:px-6 rounded-lg font-semibold transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Mint {currentZodiac.name} Sigil ✨
+          {isPending || isConfirming ? 'Minting...' : `Mint ${currentZodiac.name} Sigil ✨`}
         </button>
         <p className="text-xs text-gray-500 mt-2 text-center">Mint the currently active zodiac sigil NFT</p>
+        
+        {/* Transaction status messages */}
+        {writeError && (
+          <p className="text-red-500 text-sm mt-2 text-center">
+            Error: {writeError.message}
+          </p>
+        )}
+        {isConfirming && (
+          <p className="text-yellow-400 text-sm mt-2 text-center">
+            Waiting for confirmation...
+          </p>
+        )}
+        {isConfirmed && (
+          <p className="text-green-500 text-sm mt-2 text-center">
+            Successfully minted {currentZodiac.name} Sigil! 🎉
+          </p>
+        )}
       </div>
     </div>
   );

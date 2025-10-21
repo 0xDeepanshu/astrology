@@ -3,18 +3,18 @@ import { ShootingStarsAndStarsBackgroundDemo } from "../Shootingstarsbg"
 import { SigilCard } from "./sigil-card"
 import { StatsCard } from "./stats-card"
 const ZODIAC_SIGILS = [
-  { name: "Aries", rarity: "Common", count: 3, symbol: "♈" },
-  { name: "Taurus", rarity: "Common", count: 2, symbol: "♉" },
-  { name: "Gemini", rarity: "Rare", count: 1, symbol: "♊" },
-  { name: "Cancer", rarity: "Common", count: 0, symbol: "♋" },
-  { name: "Leo", rarity: "Epic", count: 5, symbol: "♌" },
-  { name: "Virgo", rarity: "Common", count: 1, symbol: "♍" },
-  { name: "Libra", rarity: "Rare", count: 0, symbol: "♎" },
-  { name: "Scorpio", rarity: "Legendary", count: 2, symbol: "♏" },
-  { name: "Sagittarius", rarity: "Common", count: 1, symbol: "♐" },
-  { name: "Capricorn", rarity: "Common", count: 0, symbol: "♑" },
-  { name: "Aquarius", rarity: "Rare", count: 4, symbol: "♒" },
-  { name: "Pisces", rarity: "Epic", count: 2, symbol: "♓" },
+  { name: "Aries", count: 3, symbol: "♈" },
+  { name: "Taurus",  count: 2, symbol: "♉" },
+  { name: "Gemini",  count: 1, symbol: "♊" },
+  { name: "Cancer",  count: 0, symbol: "♋" },
+  { name: "Leo",  count: 5, symbol: "♌" },
+  { name: "Virgo",  count: 1, symbol: "♍" },
+  { name: "Libra",  count: 0, symbol: "♎" },
+  { name: "Scorpio",  count: 2, symbol: "♏" },
+  { name: "Sagittarius",  count: 1, symbol: "♐" },
+  { name: "Capricorn",  count: 0, symbol: "♑" },
+  { name: "Aquarius",  count: 4, symbol: "♒" },
+  { name: "Pisces",  count: 2, symbol: "♓" },
 ]
 
 export function SigilInventory() {
@@ -35,10 +35,10 @@ export function SigilInventory() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-12 max-w-2xl mx-auto">
-          <StatsCard label="Total Sigils" value={totalSigils} />
-          <StatsCard label="Unique Types" value={uniqueTypes} />
-          <StatsCard label="Total Types" value={totalTypes} />
+        <div className="grid grid-cols-2 gap-4 mb-12 max-w-2xl mx-auto">
+          <StatsCard label="Total Sigils owner by user" value={totalSigils} />
+          
+          <StatsCard label="Total Types of NFT" value={totalTypes} />
         </div>
 
         {/* Sigil Grid */}

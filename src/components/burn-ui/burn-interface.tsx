@@ -1,5 +1,8 @@
 "use client"
+import { useState } from "react"
 import { ShootingStarsAndStarsBackgroundDemo } from "../Shootingstarsbg"
+
+
 const ZODIAC_SIGILS = [
   { name: "Aries", rarity: "Common", count: 3, symbol: "♈" },
   { name: "Taurus", rarity: "Common", count: 2, symbol: "♉" },
@@ -63,6 +66,9 @@ interface BurnInterfaceProps {
 }
 
 export function BurnInterface({ onNavigateToInventory }: BurnInterfaceProps) {
+  const [burnCount, setBurnCount] = useState(0)
+  const totalNFTs = ZODIAC_SIGILS.reduce((sum, sigil) => sum + sigil.count, 0)
+
   const getSigilCount = (name: string) => {
     return ZODIAC_SIGILS.find((s) => s.name === name)?.count || 0
   }
@@ -75,11 +81,29 @@ export function BurnInterface({ onNavigateToInventory }: BurnInterfaceProps) {
     return recipe.required.every((req) => getSigilCount(req.name) >= req.count)
   }
 
+  const handleIncrement = () => {
+    if (burnCount < totalNFTs) {
+      setBurnCount(burnCount + 1)
+    }
+  }
+
+  const handleDecrement = () => {
+    if (burnCount > 0) {
+      setBurnCount(burnCount - 1)
+    }
+  }
+
+  const handleBurn = () => {
+    if (burnCount > 0) {
+      console.log(`Burning ${burnCount} NFTs...`)
+      // Add your burn logic here
+      setBurnCount(0)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">
-      <ShootingStarsAndStarsBackgroundDemo/>
-      
-      
+      <ShootingStarsAndStarsBackgroundDemo />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-12">
@@ -91,84 +115,48 @@ export function BurnInterface({ onNavigateToInventory }: BurnInterfaceProps) {
             <span>⚠️</span>
             <span>Burning sigils is permanent and irreversible</span>
           </div>
-         
         </div>
 
-        {/* Occuli Recipes Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-          {OCCULI_RECIPES.map((recipe) => {
-            const canBurnRecipe = canBurn(recipe)
-            return (
-              <div
-                key={recipe.name}
-                className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-blue-500/30 rounded-xl p-6 backdrop-blur-sm"
+        <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 border border-blue-500/30 rounded-xl p-8 backdrop-blur-sm mb-8">
+          <h2 className="text-2xl font-bold text-red-200 mb-6 text-center">Burn Counter</h2>
+          <div className="flex flex-col items-center gap-6">
+            {/* Counter Display */}
+            <div className="flex items-center gap-8">
+              <button
+                onClick={handleDecrement}
+                disabled={burnCount === 0}
+                className="w-12 h-12 rounded-full  hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xl"
               >
-                {/* Recipe Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-3xl">{recipe.icon}</span>
-                      <h3 className="text-2xl font-bold text-blue-200">{recipe.name} NFT</h3>
-                    </div>
-                    <p className="text-sm text-blue-300/70">{recipe.description}</p>
-                  </div>
-                </div>
+                −
+              </button>
 
-                {/* Required Sigils */}
-                <div className="space-y-2 mb-4">
-                  <p className="text-xs font-semibold text-blue-300 uppercase">Required Sigils:</p>
-                  {recipe.required.map((req) => {
-                    const owned = getSigilCount(req.name)
-                    const rarity = getSigilRarity(req.name)
-                    const isSufficient = owned >= req.count
-                    const rarityConfig = {
-                      Common: "bg-purple-900/60 text-purple-200",
-                      Rare: "bg-blue-900/60 text-blue-200",
-                      Epic: "bg-pink-900/60 text-pink-200",
-                      Legendary: "bg-cyan-900/60 text-cyan-200",
-                    }
-
-                    return (
-                      <div
-                        key={req.name}
-                        className={`flex items-center justify-between p-3 rounded-lg border ${
-                          isSufficient ? "bg-slate-700/30 border-green-500/30" : "bg-slate-700/20 border-red-500/30"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`px-2 py-1 rounded text-xs font-semibold ${rarityConfig[rarity as keyof typeof rarityConfig]}`}
-                          >
-                            {rarity}
-                          </div>
-                          <span className="text-blue-200">{req.name}</span>
-                        </div>
-                        <div className={`font-bold ${isSufficient ? "text-green-400" : "text-red-400"}`}>
-                          {owned}/{req.count}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-
-                {/* Burn Button */}
-                <button
-                  disabled={!canBurnRecipe}
-                  className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 ${
-                    canBurnRecipe
-                      ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white cursor-pointer"
-                      : "bg-slate-700/50 text-slate-400 cursor-not-allowed"
-                  }`}
-                >
-                  {canBurnRecipe ? "Burn Sigils" : "Insufficient Sigils"}
-                </button>
+              <div className="text-center">
+                <div className="text-6xl font-bold text-red-300 drop-shadow-lg">{burnCount}</div>
+                <p className="text-sm text-red-300/70 mt-2">of {totalNFTs} NFTs selected</p>
               </div>
-            )
-          })}
+
+              <button
+                onClick={handleIncrement}
+                disabled={burnCount === totalNFTs}
+                className="w-12 h-12 rounded-full  hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xl"
+              >
+                +
+              </button>
+            </div>
+
+            {/* Burn Button */}
+            <button
+              onClick={handleBurn}
+              disabled={burnCount === 0}
+              className="w-full max-w-xs bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg text-lg transition-all duration-200"
+            >
+              🔥 Burn {burnCount} NFT{burnCount !== 1 ? "s" : ""}
+            </button>
+          </div>
         </div>
 
         {/* Your Sigil Inventory Section */}
-        <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-blue-500/30 rounded-xl p-8 backdrop-blur-sm">
+        <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-blue-500/30 rounded-xl p-8 backdrop-blur-sm mt-8">
           <h2 className="text-2xl font-bold text-blue-200 mb-6 text-center">Your Sigil Inventory</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {ZODIAC_SIGILS.map((sigil) => (

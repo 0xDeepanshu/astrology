@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ZODIACS, Zodiac } from '@/lib/zodiacs';
 import { ShootingStarsAndStarsBackgroundDemo } from '@/components/Shootingstarsbg';
+import Particles from '@/components/Particles';
 export default function Home() {
   const [currentZodiac, setCurrentZodiac] = useState<Zodiac>(ZODIACS[0]);
   const [timeLeft, setTimeLeft] = useState<number>(60);
@@ -69,17 +70,18 @@ const spinWheel = () => {
   };
 
   return (
-    <>
-    <div className="min-h-screen z-10  text-white p-4 sm:p-6 flex flex-col items-center justify-center gap-6 md:gap-8 font-sans">
-    <ShootingStarsAndStarsBackgroundDemo/>
-     
-      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-orange-300 text-center">AstroLOLogy</h1>
-      <p className="text-center max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-gray-400 px-2">
+    <div className="min-h-screen text-white p-4 sm:p-6 flex flex-col items-center justify-center gap-6 md:gap-8 font-sans overflow-hidden relative" style={{ pointerEvents: 'auto' }}>
+      <div className="absolute inset-0 z-0">
+        <ShootingStarsAndStarsBackgroundDemo/>
+      </div>
+      
+      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-orange-300 text-center z-10 relative" style={{ pointerEvents: 'auto' }}>AstroLOLogy</h1>
+      <p className="text-center max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-gray-400 px-2 z-10 relative" style={{ pointerEvents: 'auto' }}>
         Mint mystical zodiac sigils as the cosmic wheel turns. Each sign appears for one minute in the eternal celestial dance.
       </p>
 
       {/* Current Zodiac Display */}
-      <div className="text-center mb-4 px-2">
+      <div className="text-center mb-4 px-2 z-10 relative" style={{ pointerEvents: 'auto' }}>
         <h2 className="text-lg sm:text-xl md:text-2xl">
           Current: <span className="font-bold text-purple-300">{currentZodiac.name} {currentZodiac.symbol}</span>
         </h2>
@@ -89,7 +91,7 @@ const spinWheel = () => {
       </div>
 
       {/* Wheel Container */}
-      <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto aspect-square">
+      <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto aspect-square z-10" style={{ pointerEvents: 'auto' }}>
         <div
     className={`transition-transform duration-1500 ease-out ${
       isSpinning ? '' : 'transition-none'
@@ -110,7 +112,7 @@ const spinWheel = () => {
         </div>
 
         {/* Fixed Pointer Arrow (Top Center) */}
-       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-180 pointer-events-none">
+       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-180 pointer-events-none z-20">
   <svg
     width="30"
     height="30"
@@ -124,7 +126,7 @@ const spinWheel = () => {
       </div>
 
       {/* Mint Button */}
-      <div className="mt-4 sm:mt-6 px-2 w-full max-w-xs sm:max-w-sm">
+      <div className="mt-4 sm:mt-6 px-2 w-full max-w-xs sm:max-w-sm z-10 relative" style={{ pointerEvents: 'auto' }}>
         <button
           onClick={() => alert(`Minting ${currentZodiac.name} Sigil...`)}
           className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-4 py-3 sm:px-6 rounded-lg font-semibold transition-all shadow-lg"
@@ -134,6 +136,5 @@ const spinWheel = () => {
         <p className="text-xs text-gray-500 mt-2 text-center">Mint the currently active zodiac sigil NFT</p>
       </div>
     </div>
-    </>
   );
 }

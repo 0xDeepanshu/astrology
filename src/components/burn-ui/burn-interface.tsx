@@ -58,7 +58,8 @@ export function BurnInterface({ onNavigateToInventory }: BurnInterfaceProps) {
       })
       .catch(err => {
         console.error('Error fetching balances:', err)
-        setError(err.message || 'Error fetching balances')
+        const errorMessage = err instanceof Error ? err.message : 'Error fetching balances';
+        setError(errorMessage)
       })
       .finally(() => {
         setLoading(false)
@@ -120,7 +121,8 @@ export function BurnInterface({ onNavigateToInventory }: BurnInterfaceProps) {
       })
     } catch (error) {
       console.error('Error burning NFTs:', error)
-      alert(`Error burning NFTs: ${error.message || 'Unknown error'}`)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`Error burning NFTs: ${errorMessage}`)
     }
   }
 

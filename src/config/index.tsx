@@ -3,11 +3,7 @@ import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { bscTestnet } from '@reown/appkit/networks'
 
 // Get projectId from https://dashboard.reown.com
-export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
-
-if (!projectId) {
-  throw new Error('Project ID is not defined')
-}
+export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
 export const networks = [bscTestnet]
 
@@ -17,9 +13,8 @@ export const wagmiAdapter = new WagmiAdapter({
     storage: cookieStorage
   }),
   ssr: true,
-  projectId,
-  networks,
-  defaultNetwork: bscTestnet
+  projectId: projectId || 'default-project-id', // Use a default value if projectId is undefined
+  networks
 })
 
 export const config = wagmiAdapter.wagmiConfig

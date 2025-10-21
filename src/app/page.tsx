@@ -55,7 +55,8 @@ export default function Home() {
       });
     } catch (error) {
       console.error('Error minting sigil:', error);
-      alert(`Error minting ${currentZodiac.name} Sigil: ${error.message || 'Unknown error'}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`Error minting ${currentZodiac.name} Sigil: ${errorMessage}`);
     }
   };
 

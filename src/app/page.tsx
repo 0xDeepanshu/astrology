@@ -114,8 +114,8 @@ const spinWheel = () => {
         {/* Fixed Pointer Arrow (Top Center) */}
        <div className="absolute top-[-5] left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-180 pointer-events-none z-20">
   <svg
-    width="50"
-    height="50"
+    width="70"
+    height="70"
     viewBox="0 0 30 30"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

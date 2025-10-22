@@ -6,48 +6,113 @@ import Image from 'next/image';
 import { ZODIACS, Zodiac } from '@/lib/zodiacs';
 import { ShootingStarsAndStarsBackgroundDemo } from '@/components/Shootingstarsbg';
 import Particles from '@/components/Particles';
-import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useReadContract } from 'wagmi';
 import { ASTROSIGILS_CONTRACT_ADDRESS } from '@/contracts';
 import astrosigilsAbi from '@/abi/astrosigils.json';
 
+// ⚠️ If your contract uses a different cycle length, replace this or read it from chain
+const CYCLE_LENGTH_SECONDS = 30; // Must match contract's cycleLengthInSeconds()
+
 export default function Home() {
+  // Blockchain state
+  const { data: cycleEpoch } = useReadContract({
+    address: ASTROSIGILS_CONTRACT_ADDRESS,
+    abi: astrosigilsAbi,
+    functionName: 'cycleEpoch',
+  });
+
+  const { data: loopLength } = useReadContract({
+    address: ASTROSIGILS_CONTRACT_ADDRESS,
+    abi: astrosigilsAbi,
+    functionName: 'loopLength',
+  });
+
+  // Local UI state
   const [currentZodiac, setCurrentZodiac] = useState<Zodiac>(ZODIACS[0]);
-  const [timeLeft, setTimeLeft] = useState<number>(30);
+  const [timeLeft, setTimeLeft] = useState<number>(CYCLE_LENGTH_SECONDS);
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [rotationAngle, setRotationAngle] = useState<number>(0);
-  
+
   const { address, isConnected } = useAccount();
-  
-  // Write contract function for minting
   const { data: hash, writeContract, error: writeError, isPending } = useWriteContract();
-  
-  // Wait for transaction receipt to know when minting is complete
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-    hash,
-  });
-  
-  // Refs to track current values in callbacks without re-rendering
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
+
+  // Refs to avoid re-renders in callbacks
   const currentZodiacRef = useRef(currentZodiac);
   const rotationAngleRef = useRef(rotationAngle);
-  
-  // Update refs whenever values change
+  const prevZodiacIndexRef = useRef<number | null>(null);
+
+  // Keep refs in sync
   useEffect(() => {
     currentZodiacRef.current = currentZodiac;
   }, [currentZodiac]);
-  
+
   useEffect(() => {
     rotationAngleRef.current = rotationAngle;
   }, [rotationAngle]);
-  
-  // Function to mint the current zodiac sigil
+
+  // 🔁 Calculate current zodiac & time left from blockchain time
+  const updateFromChainTime = useCallback(() => {
+    if (cycleEpoch === undefined || loopLength === undefined) return;
+
+    const now = Math.floor(Date.now() / 1000);
+    const epoch = Number(cycleEpoch);
+    const totalLoops = Number(loopLength);
+
+    const elapsed = now - epoch;
+    const currentZodiacIndex = Math.floor(elapsed / CYCLE_LENGTH_SECONDS) % totalLoops;
+    const timeIntoCycle = elapsed % CYCLE_LENGTH_SECONDS;
+    const timeRemaining = CYCLE_LENGTH_SECONDS - timeIntoCycle;
+
+    // Update time left immediately
+    setTimeLeft(timeRemaining);
+
+    // Only update zodiac if it changed (to trigger spin)
+    if (prevZodiacIndexRef.current !== null && prevZodiacIndexRef.current !== currentZodiacIndex) {
+      const newZodiac = ZODIACS[currentZodiacIndex];
+      setCurrentZodiac(newZodiac);
+      spinToZodiac(newZodiac);
+    } else if (prevZodiacIndexRef.current === null) {
+      // First load: set initial zodiac without animation
+      const newZodiac = ZODIACS[currentZodiacIndex];
+      setCurrentZodiac(newZodiac);
+      setRotationAngle(-currentZodiacIndex * 30);
+    }
+
+    prevZodiacIndexRef.current = currentZodiacIndex;
+  }, [cycleEpoch, loopLength]);
+
+  // 🌀 Spin animation to target zodiac
+  const spinToZodiac = (zodiac: Zodiac) => {
+    setIsSpinning(true);
+    const finalAngle = -zodiac.index * 30;
+    const extraRotations = 5 * 360;
+    const spinAngle = finalAngle - extraRotations;
+
+    setRotationAngle(spinAngle);
+
+    setTimeout(() => {
+      setRotationAngle(finalAngle);
+      setIsSpinning(false);
+    }, 1500);
+  };
+
+  // 🕒 Continuously sync with real time (every 200ms for smoothness)
+  useEffect(() => {
+    if (cycleEpoch === undefined || loopLength === undefined) return;
+
+    const interval = setInterval(updateFromChainTime, 200);
+    return () => clearInterval(interval);
+  }, [updateFromChainTime]);
+
+  // 💰 Mint function (unchanged logic)
   const handleMintSigil = async () => {
     if (!isConnected) {
       alert('Please connect your wallet first');
       return;
     }
-    
+
     try {
-      // Call the mint function on the Astrosigils contract
       writeContract({
         address: ASTROSIGILS_CONTRACT_ADDRESS as `0x${string}`,
         abi: astrosigilsAbi,
@@ -60,72 +125,32 @@ export default function Home() {
     }
   };
 
-  // Get the next zodiac sign in sequence
-  const getNextZodiac = (current: Zodiac): Zodiac => {
-    const currentIndex = current.index;
-    const nextIndex = (currentIndex + 1) % ZODIACS.length; // Go to next, wrap to 0 after 11
-    return ZODIACS[nextIndex];
-  };
-
-  // Calculate rotation angle based on zodiac index
-  // Each segment = 30 degrees; rotate so selected zodiac is at top (0°)
-  const calculateRotation = (zodiac: Zodiac): number => {
-    return -zodiac.index * 30;
-  };
-
-  // Start spin animation and update zodiac
-const spinWheel = useCallback(() => {
-  setIsSpinning(true);
-
-  // Use the ref to get the current zodiac value
-  const newZodiac = getNextZodiac(currentZodiacRef.current);
-  const finalAngle = calculateRotation(newZodiac); // e.g., -90°
-
-  // Use the ref to get the current rotation angle
-  const currentAngle = rotationAngleRef.current;
-  const spinAngle = currentAngle - 360; // Make one full clockwise rotation from current position
-
-  // Step 3: Animate fast spin
-  setRotationAngle(spinAngle);
-
-  // Step 4: After fast spin, transition smoothly to final angle
-  setTimeout(() => {
-    setRotationAngle(finalAngle);
-    setCurrentZodiac(newZodiac);
-    setIsSpinning(false);
-  }, 1500); // Fast spin duration (1.5s)
-}, [getNextZodiac, calculateRotation]); // Adding dependencies
-  // Timer countdown effect
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          spinWheel();
-          return 30;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [spinWheel]); // Adding spinWheel as dependency since it's now properly memoized with useCallback
-
-  // Format seconds to MM:SS
+  // 🕒 Format time as MM:SS (but max 30s, so usually SS)
   const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const secs = (seconds % 60).toString().padStart(2, '0');
-    return `${mins}:${secs}`;
+    const secs = Math.max(0, Math.floor(seconds)).toString().padStart(2, '0');
+    return `00:${secs}`;
   };
+
+  // Show loading while fetching chain data
+  if (cycleEpoch === undefined || loopLength === undefined) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <p>Loading cosmic clock...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen text-white p-4 sm:p-6 flex flex-col items-center justify-center gap-6 md:gap-8 font-sans overflow-hidden relative" style={{ pointerEvents: 'auto' }}>
       <div className="absolute inset-0 z-0">
-        <ShootingStarsAndStarsBackgroundDemo/>
+        <ShootingStarsAndStarsBackgroundDemo />
       </div>
-      
-      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-orange-300 text-center z-10 relative" style={{ pointerEvents: 'auto' }}>AstroLOLogy</h1>
+
+      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-orange-300 text-center z-10 relative" style={{ pointerEvents: 'auto' }}>
+        AstroLOLogy
+      </h1>
       <p className="text-center max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-gray-400 px-2 z-10 relative" style={{ pointerEvents: 'auto' }}>
-        Mint mystical zodiac sigils as the cosmic wheel turns. Each sign appears for one minute in the eternal celestial dance.
+        Mint mystical zodiac sigils as the cosmic wheel turns. Each sign appears for 30 seconds in the eternal celestial dance.
       </p>
 
       {/* Current Zodiac Display */}
@@ -141,16 +166,14 @@ const spinWheel = useCallback(() => {
       {/* Wheel Container */}
       <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto aspect-square z-10" style={{ pointerEvents: 'auto' }}>
         <div
-    className={`transition-transform duration-1500 ease-out ${
-      isSpinning ? '' : 'transition-none'
-    }`}
-    style={{
-      transform: `rotate(${rotationAngle}deg)`,
-      transition: isSpinning ? 'transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none',
-    }}
-  >
+          className="transition-transform duration-1500 ease-out"
+          style={{
+            transform: `rotate(${rotationAngle}deg)`,
+            transition: isSpinning ? 'transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none',
+          }}
+        >
           <Image
-            src="/images/sigilwheel.png" // 👈 Use your final image
+            src="/images/sigilwheel.png"
             alt="Zodiac Wheel"
             width={400}
             height={400}
@@ -160,17 +183,11 @@ const spinWheel = useCallback(() => {
         </div>
 
         {/* Fixed Pointer Arrow (Top Center) */}
-       <div className="absolute top-[-5] left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-180 pointer-events-none z-20">
-  <svg
-    width="70"
-    height="70"
-    viewBox="0 0 30 30"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M15 5L10 15H20L15 5Z" fill="#60A5FA" stroke="#fff" strokeWidth="2" />
-  </svg>
-</div>
+        <div className="absolute top-[-5] left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-180 pointer-events-none z-20">
+          <svg width="70" height="70" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 5L10 15H20L15 5Z" fill="#60A5FA" stroke="#fff" strokeWidth="2" />
+          </svg>
+        </div>
       </div>
 
       {/* Mint Button */}
@@ -183,18 +200,9 @@ const spinWheel = useCallback(() => {
           {isPending || isConfirming ? 'Minting...' : `Mint ${currentZodiac.name} Sigil ✨`}
         </button>
         <p className="text-xs text-gray-500 mt-2 text-center">Mint the currently active zodiac sigil NFT</p>
-        
-        {/* Transaction status messages */}
-        {writeError && (
-          <p className="text-red-500 text-sm mt-2 text-center">
-            Error: {writeError.message}
-          </p>
-        )}
-        {isConfirming && (
-          <p className="text-yellow-400 text-sm mt-2 text-center">
-            Waiting for confirmation...
-          </p>
-        )}
+
+        {writeError && <p className="text-red-500 text-sm mt-2 text-center">Error: {writeError.message}</p>}
+        {isConfirming && <p className="text-yellow-400 text-sm mt-2 text-center">Waiting for confirmation...</p>}
         {isConfirmed && (
           <p className="text-green-500 text-sm mt-2 text-center">
             Successfully minted {currentZodiac.name} Sigil! 🎉

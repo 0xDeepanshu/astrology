@@ -11,7 +11,7 @@ import { ASTROSIGILS_CONTRACT_ADDRESS } from '@/contracts';
 import astrosigilsAbi from '@/abi/astrosigils.json';
 
 // ⚠️ If your contract uses a different cycle length, replace this or read it from chain
-const CYCLE_LENGTH_SECONDS = 30; // Must match contract's cycleLengthInSeconds()
+const CYCLE_LENGTH_SECONDS = 10; // Must match contract's cycleLengthInSeconds()
 
 export default function Home() {
   // Blockchain state

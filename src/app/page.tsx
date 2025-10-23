@@ -7,13 +7,15 @@ import { ZODIACS, Zodiac } from '@/lib/zodiacs';
 import { ShootingStarsAndStarsBackgroundDemo } from '@/components/Shootingstarsbg';
 import Particles from '@/components/Particles';
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useReadContract } from 'wagmi';
-import { ASTROSIGILS_CONTRACT_ADDRESS } from '@/contracts';
+import { ASTROSIGILS_CONTRACT_ADDRESS, ASTROOCULI_CONTRACT_ADDRESS } from '@/contracts';
 import astrosigilsAbi from '@/abi/astrosigils.json';
+import astrooculiAbi from '@/abi/astrooculi.json'
 
 // ⚠️ If your contract uses a different cycle length, replace this or read it from chain
 const CYCLE_LENGTH_SECONDS = 30; // Must match contract's cycleLengthInSeconds()
-
 export default function Home() {
+
+  
   // Blockchain state
   const { data: cycleEpoch } = useReadContract({
     address: ASTROSIGILS_CONTRACT_ADDRESS,
@@ -42,6 +44,15 @@ export default function Home() {
   const rotationAngleRef = useRef(rotationAngle);
   const prevZodiacIndexRef = useRef<number | null>(null);
 
+
+  const { data: hasCompleteSet, refetch: refetchCompleteSet } = useReadContract({
+    address: ASTROOCULI_CONTRACT_ADDRESS,
+    abi: astrooculiAbi,
+    functionName: 'checkCompleteSet',
+    args: address ? [address] : undefined, // Only call if address exists
+   
+  });
+ 
   // Keep refs in sync
   useEffect(() => {
     currentZodiacRef.current = currentZodiac;
@@ -105,6 +116,30 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [updateFromChainTime]);
 
+
+  const handleMintOcculi = async () => {
+  if (!isConnected || !address) {
+    alert('Please connect your wallet first');
+    return;
+  }
+
+  if (hasCompleteSet !== true) {
+    alert('You need a complete set of zodiac sigils to mint an Occuli!');
+    return;
+  }
+
+  try {
+    writeContract({
+      address: ASTROOCULI_CONTRACT_ADDRESS as `0x${string}`,
+      abi: astrooculiAbi,
+      functionName: 'mint', // 👈 or 'mintOcculi' — check your contract!
+    });
+  } catch (error) {
+    console.error('Error minting Occuli:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    alert(`Error minting Occuli: ${errorMessage}`);
+  }
+};
   // 💰 Mint function (unchanged logic)
   const handleMintSigil = async () => {
     if (!isConnected) {
@@ -209,13 +244,21 @@ export default function Home() {
           </p>
         )}
         <button
-          // onClick={handleMintSigil}
-          // disabled={isPending || isConfirming}
-          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-4 py-3 sm:px-6 rounded-lg font-semibold transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {/* {isPending || isConfirming ? 'Minting...' : `Mint Oculli`} */}
-          mint occuli
-        </button>
+            onClick={handleMintOcculi}
+            disabled={!hasCompleteSet || !isConnected || isPending || isConfirming}
+            className={`w-full px-4 py-3 sm:px-6 rounded-lg font-semibold transition-all shadow-lg ${
+              hasCompleteSet && isConnected
+                ? 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700'
+                : 'bg-gray-700 cursor-not-allowed'
+            }`}
+          >
+            {hasCompleteSet ? 'Mint Occuli 🔮' : '🔒 Complete Zodiac Set to Unlock'}
+          </button>
+          {!hasCompleteSet && isConnected && (
+            <p className="text-xs text-gray-500 mt-2 text-center">
+              
+            </p>
+          )}
       </div>
     </div>
   );

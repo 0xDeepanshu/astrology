@@ -11,7 +11,7 @@ import { ASTROSIGILS_CONTRACT_ADDRESS } from '@/contracts';
 import astrosigilsAbi from '@/abi/astrosigils.json';
 
 // ⚠️ If your contract uses a different cycle length, replace this or read it from chain
-const CYCLE_LENGTH_SECONDS = 10; // Must match contract's cycleLengthInSeconds()
+const CYCLE_LENGTH_SECONDS = 30; // Must match contract's cycleLengthInSeconds()
 
 export default function Home() {
   // Blockchain state
@@ -208,6 +208,14 @@ export default function Home() {
             Successfully minted {currentZodiac.name} Sigil! 🎉
           </p>
         )}
+        <button
+          // onClick={handleMintSigil}
+          // disabled={isPending || isConfirming}
+          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-4 py-3 sm:px-6 rounded-lg font-semibold transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {/* {isPending || isConfirming ? 'Minting...' : `Mint Oculli`} */}
+          mint occuli
+        </button>
       </div>
     </div>
   );

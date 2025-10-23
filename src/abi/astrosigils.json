@@ -7,16 +7,6 @@
         "type": "string"
       },
       {
-        "internalType": "uint256",
-        "name": "cycleDelay",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalTokenIds",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
         "name": "_astroloculusTerminal",
         "type": "address"

@@ -37,6 +37,10 @@ export default function Home() {
   const { data: hash, writeContract, error: writeError, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
 
+  // Separate state for Occuli minting
+  const { data: occuliHash, writeContract: writeOcculiContract, error: occuliWriteError, isPending: isOcculiPending } = useWriteContract();
+  const { isLoading: isOcculiConfirming, isSuccess: isOcculiConfirmed } = useWaitForTransactionReceipt({ hash: occuliHash });
+
   // Refs to avoid re-renders in callbacks
   const currentZodiacRef = useRef(currentZodiac);
   const rotationAngleRef = useRef(rotationAngle);
@@ -127,7 +131,7 @@ export default function Home() {
   }
 
   try {
-    writeContract({
+    writeOcculiContract({
       address: ASTROOCULI_CONTRACT_ADDRESS as `0x${string}`,
       abi: astrooculiAbi,
       functionName: 'mint', // 👈 or 'mintOcculi' — check your contract!
@@ -243,18 +247,26 @@ export default function Home() {
         )}
         <button
             onClick={handleMintOcculi}
-            disabled={!hasCompleteSet || !isConnected || isPending || isConfirming}
+            disabled={!hasCompleteSet || !isConnected || isOcculiPending || isOcculiConfirming}
             className={`w-full px-4 py-3 sm:px-6 rounded-lg font-semibold transition-all shadow-lg ${
               hasCompleteSet && isConnected
                 ? 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700'
                 : 'bg-gray-700 cursor-not-allowed'
             }`}
           >
-            {hasCompleteSet ? 'Mint Occuli 🔮' : '🔒 Complete Zodiac Set to Unlock'}
+            {isOcculiPending || isOcculiConfirming ? 'Minting...' : (hasCompleteSet ? 'Mint Occuli 🔮' : '🔒 Sacrifice Locked')}
           </button>
+          <p className="text-xs text-gray-500 mt-2 text-center">Mint at least one complete set of sigils to unlock sacrifice</p>
           {!hasCompleteSet && isConnected && (
             <p className="text-xs text-gray-500 mt-2 text-center">
               
+            </p>
+          )}
+          {occuliWriteError && <p className="text-red-500 text-sm mt-2 text-center">Error: {occuliWriteError.message}</p>}
+          {isOcculiConfirming && <p className="text-yellow-400 text-sm mt-2 text-center">Waiting for confirmation...</p>}
+          {isOcculiConfirmed && (
+            <p className="text-green-500 text-sm mt-2 text-center">
+              Successfully minted Occuli! 🎉
             </p>
           )}
       </div>

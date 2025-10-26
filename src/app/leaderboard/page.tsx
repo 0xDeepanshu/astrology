@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Search, Loader2 } from "lucide-react"
-import { ShootingStarsAndStarsBackgroundDemo } from "@/components/Shootingstarsbg"
+import { Search, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
+
 interface Owner {
   wallet: string
   balance: string
@@ -14,6 +14,8 @@ export default function NFTOwnersPage() {
   const [filteredOwners, setFilteredOwners] = useState<Owner[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 25
 
   useEffect(() => {
     async function fetchOwners() {
@@ -36,23 +38,34 @@ export default function NFTOwnersPage() {
   useEffect(() => {
     const filtered = owners.filter((owner) => owner.wallet.toLowerCase().includes(searchTerm.toLowerCase()))
     setFilteredOwners(filtered)
+    setCurrentPage(1)
   }, [searchTerm, owners])
 
+  const totalPages = Math.ceil(filteredOwners.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedOwners = filteredOwners.slice(startIndex, endIndex)
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1))
+  }
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+  }
+
   return (
-    
-    <main className="min-h-screen relative bg-black overflow-hidden">
+    <main className="min-h-screen bg-background">
       <div className="border-b border-border bg-card">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="space-y-2">
-            <h1 className="text-3xl text-orange-400 font-bold tracking-tight ">NFT Owners</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">NFT Owners</h1>
             <p className="text-muted-foreground">View all wallet addresses and their NFT holdings</p>
-      
           </div>
         </div>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        
         <div className="mb-6 flex items-center gap-2">
           <Search className="h-5 w-5 text-muted-foreground" />
           <input
@@ -76,21 +89,21 @@ export default function NFTOwnersPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-border border-orange-300 bg-card">
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-border border-orange-300 bg-muted/50">
+                  <tr className="border-b border-border bg-muted/50">
                     <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Wallet Address</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Balance</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Token ID</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredOwners.map((owner, index) => (
+                  {paginatedOwners.map((owner, index) => (
                     <tr
                       key={`${owner.wallet}-${index}`}
-                      className="border-b border-border border-orange-300 transition-colors hover:bg-muted/50"
+                      className="border-b border-border transition-colors hover:bg-muted/50"
                     >
                       <td className="px-6 py-4">
                         <code className="rounded bg-muted px-2 py-1 font-mono text-sm text-foreground">
@@ -104,10 +117,34 @@ export default function NFTOwnersPage() {
                 </tbody>
               </table>
             </div>
-            <div className="border-t border-border bg-muted/30 px-6 py-3">
-              <p className="text-sm text-muted-foreground">
-                Showing {filteredOwners.length} of {owners.length} owners
-              </p>
+            <div className="border-t border-border bg-muted/30 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Showing {startIndex + 1} to {Math.min(endIndex, filteredOwners.length)} of {filteredOwners.length}{" "}
+                  owners
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                    className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    
+                  </button>
+                  <span className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}

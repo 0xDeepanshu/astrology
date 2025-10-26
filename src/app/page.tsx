@@ -1,6 +1,4 @@
-// app/page.tsx
 'use client';
-
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { ZODIACS, Zodiac } from '@/lib/zodiacs';
@@ -12,7 +10,7 @@ import astrosigilsAbi from '@/abi/astrosigils.json';
 import astrooculiAbi from '@/abi/astrooculi.json'
 
 // ⚠️ If your contract uses a different cycle length, replace this or read it from chain
-const CYCLE_LENGTH_SECONDS = 30; // Must match contract's cycleLengthInSeconds()
+const CYCLE_LENGTH_SECONDS = 10; // Must match contract's cycleLengthInSeconds()
 export default function Home() {
 
   

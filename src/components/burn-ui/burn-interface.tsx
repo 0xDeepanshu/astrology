@@ -145,35 +145,35 @@ export function BurnInterface({ onNavigateToInventory }: BurnInterfaceProps) {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-blue-200 mb-2 drop-shadow-lg">Burn Interface</h1>
-          <p className="text-lg text-blue-300/70 mb-4">Sacrifice zodiac sigils to forge powerful Occuli NFTs</p>
+          <p className="text-lg text-blue-300/70 mb-4">Sacrifice zodiac symbols to forge powerful orbs NFTs</p>
           <div className="flex items-center justify-center gap-2 text-red-400 text-sm mb-6">
             <span>⚠️</span>
-            <span>Burning sigils is permanent and irreversible</span>
+            <span>Burning symbols is permanent and irreversible</span>
           </div>
         </div>
 
-        {/* Your Sigil Inventory Section */}
+        {/* Your symbol Inventory Section */}
         <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-blue-500/30 rounded-xl p-8 backdrop-blur-sm mt-8">
-          <h2 className="text-2xl font-bold text-blue-200 mb-6 text-center">Your Sigil Inventory</h2>
+          <h2 className="text-2xl font-bold text-blue-200 mb-6 text-center">Your symbol Inventory</h2>
           
           {/* Connection Status */}
           {!isConnected && (
             <div className="text-center mb-8 p-4 bg-yellow-900/30 border border-yellow-700 rounded-lg">
-              <p className="text-yellow-300">Connect your wallet to view your sigil inventory</p>
+              <p className="text-yellow-300">Connect your wallet to view your symbol inventory</p>
             </div>
           )}
 
           {/* Loading State */}
           {loading && isConnected && (
             <div className="text-center mb-8">
-              <p className="text-blue-300">Loading your sigil collection...</p>
+              <p className="text-blue-300">Loading your symbol collection...</p>
             </div>
           )}
 
           {/* Error State */}
           {error && (
             <div className="text-center mb-8 p-4 bg-red-900/30 border border-red-700 rounded-lg">
-              <p className="text-red-300">Error loading sigil inventory: {error}</p>
+              <p className="text-red-300">Error loading symbol inventory: {error}</p>
               <p className="text-red-400 text-sm mt-2">Please check if the contract address is correct and you're on the right network</p>
             </div>
           )}
@@ -217,7 +217,7 @@ export function BurnInterface({ onNavigateToInventory }: BurnInterfaceProps) {
             </div>
           )}
 
-          {/* Sigil Grid with Burn Controls */}
+          {/* symbol Grid with Burn Controls */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
             {ZODIACS.map((zodiac, index) => (
               <div 

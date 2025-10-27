@@ -75,39 +75,39 @@ export function SigilInventory() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-blue-200 mb-2 drop-shadow-lg">Sigil Inventory</h1>
-          <p className="text-lg text-blue-300/70">Your collection of mystical zodiac sigils</p>
+          <h1 className="text-5xl font-bold text-blue-200 mb-2 drop-shadow-lg">symbol Inventory</h1>
+          <p className="text-lg text-blue-300/70">Your collection of mystical zodiac symbols</p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-12 max-w-2xl mx-auto">
-          <StatsCard label="Total Sigils owned by user" value={totalSigils} />
+          <StatsCard label="Total symbols owned by user" value={totalSigils} />
           <StatsCard label="Unique Types Owned" value={uniqueTypes} />
         </div>
 
         {/* Connection Status */}
         {!isConnected && (
           <div className="text-center mb-8 p-4 bg-yellow-900/30 border border-yellow-700 rounded-lg">
-            <p className="text-yellow-300">Connect your wallet to view your sigil inventory</p>
+            <p className="text-yellow-300">Connect your wallet to view your symbol inventory</p>
           </div>
         )}
 
         {/* Loading State */}
         {loading && isConnected && (
           <div className="text-center mb-8">
-            <p className="text-blue-300">Loading your sigil collection...</p>
+            <p className="text-blue-300">Loading your symbol collection...</p>
           </div>
         )}
 
         {/* Error State */}
         {error && (
           <div className="text-center mb-8 p-4 bg-red-900/30 border border-red-700 rounded-lg">
-            <p className="text-red-300">Error loading sigil inventory: {error}</p>
+            <p className="text-red-300">Error loading symbol inventory: {error}</p>
             <p className="text-red-400 text-sm mt-2">Please check if the contract address is correct and you're on the right network</p>
           </div>
         )}
 
-        {/* Sigil Grid */}
+        {/* symbol Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {zodiacSigils.map((sigil) => (
             <SigilCard key={sigil.name} sigil={sigil} />

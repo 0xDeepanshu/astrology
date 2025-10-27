@@ -10,7 +10,7 @@ import astrosigilsAbi from '@/abi/astrosigils.json';
 import astrooculiAbi from '@/abi/astrooculi.json'
 
 // ⚠️ If your contract uses a different cycle length, replace this or read it from chain
-const CYCLE_LENGTH_SECONDS = 10; // Must match contract's cycleLengthInSeconds()
+const CYCLE_LENGTH_SECONDS = 15; // Must match contract's cycleLengthInSeconds()
 export default function Home() {
 
   
@@ -187,7 +187,7 @@ export default function Home() {
         AstroLOLogy
       </h1>
       <p className="text-center max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-gray-400 px-2 z-10 relative" style={{ pointerEvents: 'auto' }}>
-        Mint mystical zodiac symbols as the cosmic wheel turns. Each sign appears for 30 seconds in the eternal celestial dance.
+        Mint mystical zodiac symbols as the cosmic wheel turns. Each sign appears for 15 seconds in the eternal celestial dance.
       </p>
 
       {/* Current Zodiac Display */}

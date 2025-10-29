@@ -95,8 +95,8 @@ export default function NFTOwnersPage() {
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
                     <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Wallet Address</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Balance</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Token ID</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Orbs</th>
+                    
                   </tr>
                 </thead>
                 <tbody>
@@ -110,8 +110,8 @@ export default function NFTOwnersPage() {
                           {owner.wallet}
                         </code>
                       </td>
-                      <td className="px-6 py-4 text-sm text-foreground">{owner.balance}</td>
-                      <td className="px-6 py-4 text-sm text-foreground">{owner.tokenId}</td>
+                      <td className="px-10 py-4 text-sm text-foreground">{owner.balance}</td>
+                      
                     </tr>
                   ))}
                 </tbody>

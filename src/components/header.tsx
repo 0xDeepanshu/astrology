@@ -12,7 +12,7 @@ export default function Header() {
   const navItems = [
     { label: "Wheel", href: "/" },
     { label: "Inventory", href: "/inventory" },
-    { label: "Burn", href: "/burn" },
+    { label: "Sacrifice", href: "/sacrifice" },
     { label: "leaderboard", href: "/leaderboard" },
   ]
 

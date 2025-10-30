@@ -17,7 +17,7 @@ function ContextProvider({ children, cookies }: { children: ReactNode; cookies: 
     // Set up metadata
     const metadata = {
       name: 'AstroLOLogy',
-      description: 'Mint mystical zodiac symbols as the cosmic wheel turns',
+      description: 'Mint mystical zodiac Symbols as the cosmic wheel turns',
       url: typeof window !== 'undefined' ? window.location.origin : 'https://yourdomain.com', // dynamically determine URL or use default
       icons: ['https://avatars.githubusercontent.com/u/179229932']
     }

@@ -76,12 +76,12 @@ export function SigilInventory() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-blue-200 mb-2 drop-shadow-lg">symbol Inventory</h1>
-          <p className="text-lg text-blue-300/70">Your collection of mystical zodiac symbols</p>
+          <p className="text-lg text-blue-300/70">Your collection of mystical zodiac Symbols</p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-12 max-w-2xl mx-auto">
-          <StatsCard label="Total symbols owned by user" value={totalSigils} />
+          <StatsCard label="Total Symbols owned by user" value={totalSigils} />
           <StatsCard label="Unique Types Owned" value={uniqueTypes} />
         </div>
 

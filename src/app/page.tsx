@@ -126,7 +126,7 @@ export default function Home() {
   }
 
   if (hasCompleteSet !== true) {
-    alert('You need a complete set of zodiac symbols to mint an orbs!');
+    alert('You need a complete set of zodiac Symbols to sacrifice in exchange for minting an Orb');
     return;
   }
 
@@ -187,7 +187,7 @@ export default function Home() {
         AstroLOLogy
       </h1>
       <p className="text-center max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-gray-400 px-2 z-10 relative" style={{ pointerEvents: 'auto' }}>
-        Mint mystical zodiac symbols as the cosmic wheel turns. Each sign appears for 15 seconds in the eternal celestial dance.
+        Mint mystical zodiac Symbols as the cosmic wheel turns. Each sign appears for 15 seconds in the eternal celestial dance.
       </p>
 
       {/* Current Zodiac Display */}
@@ -234,7 +234,7 @@ export default function Home() {
           disabled={isPending || isConfirming}
           className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-4 py-3 sm:px-6 rounded-lg font-semibold transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isPending || isConfirming ? 'Minting...' : `Mint ${currentZodiac.name} symbol ✨`}
+          {isPending || isConfirming ? 'Minting...' : `Mint ${currentZodiac.name} Symbol`}
         </button>
         <p className="text-xs text-gray-500 mt-2 text-center">Mint the currently active zodiac symbol NFT</p>
 
@@ -254,9 +254,9 @@ export default function Home() {
                 : 'bg-gray-700 cursor-not-allowed'
             }`}
           >
-            {isOcculiPending || isOcculiConfirming ? 'Minting...' : (hasCompleteSet ? 'Mint orbs 🔮' : '🔒 Sacrifice Locked')}
+            {isOcculiPending || isOcculiConfirming ? 'Minting...' : (hasCompleteSet ? 'Sacrifice Symbols for Orbs' : '🔒 Sacrifice Locked')}
           </button>
-          <p className="text-xs text-gray-500 mt-2 text-center">Mint at least one complete set of symbols to unlock sacrifice</p>
+          <p className="text-xs text-gray-500 mt-2 text-center">Mint at least one complete set of Symbols to unlock Sacrifice</p>
           {!hasCompleteSet && isConnected && (
             <p className="text-xs text-gray-500 mt-2 text-center">
               

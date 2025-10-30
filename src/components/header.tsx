@@ -13,7 +13,7 @@ export default function Header() {
     { label: "Wheel", href: "/" },
     { label: "Inventory", href: "/inventory" },
     { label: "Sacrifice", href: "/sacrifice" },
-    { label: "leaderboard", href: "/leaderboard" },
+    { label: "Leaderboard", href: "/leaderboard" },
   ]
 
   return (

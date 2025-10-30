@@ -209,7 +209,7 @@ export function SacrificeInterface({ onNavigateToInventory }: SacrificeInterface
                   </div>
                   <div>
                     <p className="text-blue-200 font-semibold">No limit to ownership</p>
-                    <p className="text-blue-300/70 text-sm">You can own unlimited Symbols and Orbs</p>
+                    <p className="text-blue-300/70 text-sm">There is no limit to the number of Symbols or Orbs you can mint/own.</p>
                   </div>
                 </div>
 

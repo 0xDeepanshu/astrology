@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
 import Moralis from "moralis";
 
-export const moralisApiKey = process.env.MORALIS_API_KEY;
-
 let isMoralisStarted = false;
 
 export async function GET() {
   try {
     if (!isMoralisStarted) {
       await Moralis.start({
-        apiKey: moralisApiKey,
+        apiKey: process.env.MORALIS_API_KEY,
       });
       isMoralisStarted = true;
     }

@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import Moralis from "moralis";
 
+export const moralisApiKey = process.env.MORALIS_API_KEY;
+
 let isMoralisStarted = false;
 
 export async function GET() {
   try {
     if (!isMoralisStarted) {
       await Moralis.start({
-        apiKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjNjZDU5ZTM3LWQ5YTctNDZhMS05ZDYzLTk1MjIyNTE1ZTNkOSIsIm9yZ0lkIjoiNDc3NDA3IiwidXNlcklkIjoiNDkxMTY5IiwidHlwZUlkIjoiNTRiMDY4Y2UtYTE4Yy00N2YwLWFkNDgtM2VlMTA5ZTlhYTlmIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3NjEyMzA0NjUsImV4cCI6NDkxNjk5MDQ2NX0.opCTGO8hLc1u4cqTrc3xYwxZdoqkoSs_kqFlBFwE5h4',
+        apiKey: moralisApiKey,
       });
       isMoralisStarted = true;
     }

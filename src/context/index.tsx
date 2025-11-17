@@ -3,7 +3,7 @@
 import { wagmiAdapter, projectId } from '@/config'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createAppKit } from '@reown/appkit/react'
-import { bscTestnet } from '@reown/appkit/networks'
+import { bsc } from '@reown/appkit/networks'
 import React, { type ReactNode, useEffect } from 'react'
 import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi'
 
@@ -27,8 +27,8 @@ function ContextProvider({ children, cookies }: { children: ReactNode; cookies: 
       const modal = createAppKit({
         adapters: [wagmiAdapter],
         projectId,
-        networks: [bscTestnet],
-        defaultNetwork: bscTestnet,
+        networks: [bsc],
+        defaultNetwork: bsc,
         metadata: metadata,
         features: {
           analytics: true // Optional - defaults to your Cloud configuration

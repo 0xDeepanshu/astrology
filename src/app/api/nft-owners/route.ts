@@ -13,8 +13,8 @@ export async function GET() {
     }
 
     const response = await Moralis.EvmApi.nft.getNFTOwners({
-      address: "0x44d1001f14b4A49f09a04A79E1c1793fC1892A1e", // your NFT contract
-      chain: "0x61",
+      address: "0x32b7d39515c940b7FaA05C2e7503200709Abed40", // your NFT contract
+      chain: "0x38",
   
       limit: 100,
     });

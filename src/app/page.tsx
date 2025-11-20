@@ -9,7 +9,7 @@ import { ASTROSIGILS_CONTRACT_ADDRESS, ASTROOCULI_CONTRACT_ADDRESS } from '@/con
 import astrosigilsAbi from '@/abi/astrosigils.json';
 import astrooculiAbi from '@/abi/astrooculi.json'
 
-// ⚠️ If your contract uses a different cycle length, replace this or read it from chain
+// 15 seconds hardcoded in Smart Contract as per project spec
 const CYCLE_LENGTH_SECONDS = 15; // Must match contract's cycleLengthInSeconds()
 export default function Home() {
 
@@ -75,7 +75,7 @@ export default function Home() {
     const elapsed = now - epoch;
     const currentZodiacIndex = Math.floor(elapsed / CYCLE_LENGTH_SECONDS) % totalLoops;
     const timeIntoCycle = elapsed % CYCLE_LENGTH_SECONDS;
-    const timeRemaining = CYCLE_LENGTH_SECONDS - timeIntoCycle;
+    const timeRemaining = (CYCLE_LENGTH_SECONDS - timeIntoCycle) % CYCLE_LENGTH_SECONDS;
 
     // Update time left immediately
     setTimeLeft(timeRemaining);
@@ -242,7 +242,7 @@ export default function Home() {
         {isConfirming && <p className="text-yellow-400 text-sm mt-2 text-center">Waiting for confirmation...</p>}
         {isConfirmed && (
           <p className="text-green-500 text-sm mt-2 text-center">
-            Successfully minted {currentZodiac.name} symbol! 🎉
+            Minting the symbol from the wheel. The symbol you get depends on when your transaction is processed.
           </p>
         )}
         <button
@@ -266,7 +266,7 @@ export default function Home() {
           {isOcculiConfirming && <p className="text-yellow-400 text-sm mt-2 text-center">Waiting for confirmation...</p>}
           {isOcculiConfirmed && (
             <p className="text-green-500 text-sm mt-2 text-center">
-              Successfully minted orbs! 🎉
+              Sacrifice has been initiated.
             </p>
           )}
       </div>
